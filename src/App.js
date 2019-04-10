@@ -1,28 +1,65 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
+
+import { showModal, hideModal } from './actions/modalActions';
+
+// Modal types
+import AlertModal from './components/modals/AlertModal';
+
+const MODAL_TYPES = {
+  alert: AlertModal
+};
 
 class App extends Component {
+  handleClick = () => {
+    const { showModal, hideModal } = this.props;
+
+    showModal(
+      {
+        title: 'My Modal',
+        message: 'Hi from alert modal',
+        positiveButton: {
+          text: 'Save',
+          onClick: () => alert('Avengers 4 will be awesome.')
+        },
+        negativeButton: {
+          text: 'Close',
+          onClick: () => hideModal()
+        }
+      },
+      'alert' // modal type
+    );
+  };
+
   render() {
+    const { modalReducer } = this.props;
+    const CurrentModal = MODAL_TYPES[modalReducer.modalType];
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+        <button onClick={this.handleClick}>show modal</button>
+        <p>Current Redux state:</p>
+        <pre>{JSON.stringify(modalReducer)}</pre>
+
+        {modalReducer.type === 'SHOW_MODAL' && (
+          <CurrentModal {...modalReducer.modalProps} />
+        )}
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  showModal: (modalProps, modalType) =>
+    dispatch(showModal({ modalProps, modalType })),
+  hideModal: () => dispatch(hideModal())
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
