@@ -1,34 +1,38 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { showModal, hideModal } from './actions/modalActions';
+import { showModal, hideModal } from "./actions/modalActions";
 
 // Modal types
-import AlertModal from './components/modals/AlertModal';
+import AlertModal from "./components/modals/AlertModal";
 
 const MODAL_TYPES = {
   alert: AlertModal
 };
 
 class App extends Component {
+  componentDidMount() {
+    console.log(this.props);
+  }
+
   handleClick = () => {
     const { showModal, hideModal } = this.props;
 
-    showModal(
-      {
-        title: 'My Modal',
-        message: 'Hi from alert modal',
+    showModal({
+      modalProps: {
+        title: "My Modal",
+        message: "Hi from alert modal",
         positiveButton: {
-          text: 'Save',
-          onClick: () => alert('Avengers 4 will be awesome.')
+          text: "Save",
+          onClick: () => alert("Avengers 4 will be awesome.")
         },
         negativeButton: {
-          text: 'Close',
+          text: "Close",
           onClick: () => hideModal()
         }
       },
-      'alert' // modal type
-    );
+      modalType: "alert"
+    });
   };
 
   render() {
@@ -41,7 +45,7 @@ class App extends Component {
         <p>Current Redux state:</p>
         <pre>{JSON.stringify(modalReducer)}</pre>
 
-        {modalReducer.type === 'SHOW_MODAL' && (
+        {modalReducer.type === "SHOW_MODAL" && (
           <CurrentModal {...modalReducer.modalProps} />
         )}
       </div>
@@ -49,15 +53,12 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  ...state
-});
+const mapStateToProps = state => ({ ...state });
 
-const mapDispatchToProps = dispatch => ({
-  showModal: (modalProps, modalType) =>
-    dispatch(showModal({ modalProps, modalType })),
-  hideModal: () => dispatch(hideModal())
-});
+const mapDispatchToProps = {
+  showModal,
+  hideModal
+};
 
 export default connect(
   mapStateToProps,
